@@ -22,7 +22,28 @@ export const _routes = new Map<RouteOptions['url'], Route>();
 const wrapRouteCallback = (
     routeOptions: RouteOptions
 ): WrappedRouteCallback => {
-    return () => Response.json();
+    return (request) => {
+        let status = 200;
+        let body: unknown = null;
+        let headers: Headers = {};
+
+        const routeRequest: RouteRequest = request;
+
+        const routeResponse: RouteResponse = {
+            setHeader: (name, value) => {
+                headers[name] = value;
+            },
+            send: (data) => {
+                body = data;
+            },
+        };
+
+        routeOptions.onRequest?.(routeRequest, routeResponse);
+        routeOptions.preHandler?.(routeRequest, routeResponse);
+        routeOptions.handler(routeRequest, routeResponse);
+
+        return new Response(JSON.stringify(body), { headers, status });
+    };
 };
 
 const prepareRoute = (route: Route): PreparedRoute => {
@@ -42,6 +63,8 @@ const prepareRoute = (route: Route): PreparedRoute => {
 const prepareRoutes = (): PreparedRoutes => {
     const preparedRoutes: PreparedRoutes = {};
 
+    // TODO: rewrite it with forof loop
+
     _routes.forEach((options, url) => {
         preparedRoutes[url] = prepareRoute(options);
     });
@@ -54,7 +77,6 @@ export const listen = (port?: number, hostname?: string): void => {
         port,
 
         hostname,
-
         routes: prepareRoutes(),
     });
 };
