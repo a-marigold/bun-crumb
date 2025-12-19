@@ -3,6 +3,10 @@ export type Header = {
     value: string;
 };
 
+export type Headers = {
+    [K in string]: string;
+};
+
 export type RouteRequest<T extends { body: unknown } = { body: unknown }> =
     Omit<Request, 'body'> & {
         body: T extends { body: unknown } ? T['body'] : unknown;
