@@ -13,9 +13,11 @@ import type {
 
 type WrappedRouteCallback = (request: Request) => Response;
 
-type PreparedRoute = Record<HttpMethod, WrappedRouteCallback>;
+type PreparedRoute = Partial<Record<HttpMethod, WrappedRouteCallback>>;
 
-export const _routes = new Map<RouteOptions['url'], RouteOptions>();
+type PreparedRoutes = Record<RouteOptions['url'], PreparedRoute>;
+
+export const _routes = new Map<RouteOptions['url'], Route>();
 
 const wrapRouteCallback = (
     routeOptions: RouteOptions
@@ -23,7 +25,7 @@ const wrapRouteCallback = (
     return () => Response.json();
 };
 
-const prepareRoute = (route: Route): Partial<PreparedRoute> => {
+const prepareRoute = (route: Route): PreparedRoute => {
     const preparedRoute: Partial<PreparedRoute> = {};
 
     for (const routeMethod of Object.entries(route) as [
@@ -37,7 +39,15 @@ const prepareRoute = (route: Route): Partial<PreparedRoute> => {
     return preparedRoute;
 };
 
-const preparedRoutes: Record<RouteOptions['url'], PreparedRoute> = {};
+const prepareRoutes = (): PreparedRoutes => {
+    const preparedRoutes: PreparedRoutes = {};
+
+    _routes.forEach((options, url) => {
+        preparedRoutes[url] = prepareRoute(options);
+    });
+
+    return preparedRoutes;
+};
 
 export const listen = (port?: number, hostname?: string): void => {
     serve({
@@ -45,6 +55,6 @@ export const listen = (port?: number, hostname?: string): void => {
 
         hostname,
 
-        routes: preparedRoutes,
+        routes: prepareRoutes(),
     });
 };

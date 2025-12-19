@@ -13,10 +13,7 @@ export type Header = {
 
     value: string;
 };
-
-export type Headers = {
-    [K in string]: string;
-};
+export type Headers = Record<string, string>;
 
 export type RouteRequest<T extends { body: unknown } = { body: unknown }> =
     Omit<Request, 'body'> & {
@@ -31,10 +28,7 @@ export interface RouteResponse<
     send: (data: T['body']) => void;
 }
 
-export type Route = {
-    [K in HttpMethod]: RouteOptions;
-};
-
+export type Route = Partial<Record<HttpMethod, RouteOptions>>;
 export type RouteOptions = {
     url: string;
     method: HttpMethod;

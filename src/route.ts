@@ -1,7 +1,9 @@
+// TODO: add docs
+
 import { _routes } from './server';
 
-import type { Route } from './types';
+import type { RouteOptions } from './types';
 
-export const createRoute = (route: Route) => {
-    _routes.set(route.url, route);
+export const createRoute = (route: RouteOptions) => {
+    _routes.set(route.url, { [route.method]: route });
 };
