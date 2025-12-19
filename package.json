@@ -1,19 +1,23 @@
 {
     "name": "crumb-bun",
-    "author": "marigold",
-    "license": "UNLICENSED",
     "version": "0.0.0",
-    "keywords": [
-        "typescript",
-        "bun"
-    ],
-    "private": true,
-    "type": "module",
+    "author": "marigold",
     "module": "index.ts",
     "devDependencies": {
+        "@biomejs/biome": "^2.3.10",
         "@types/bun": "latest"
     },
     "peerDependencies": {
         "typescript": "^5"
+    },
+    "keywords": [
+        "typescript",
+        "bun"
+    ],
+    "license": "UNLICENSED",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "lint": "bunx biome check"
     }
 }
