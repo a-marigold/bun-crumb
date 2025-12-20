@@ -2,7 +2,7 @@
     "name": "crumb-bun",
     "version": "0.0.0",
     "author": "marigold",
-    "module": "dist/index.ts",
+    "module": "dist/index.js",
     "license": "UNLICENSED",
     "devDependencies": {
         "@biomejs/biome": "^2.3.10",
@@ -20,12 +20,9 @@
         "bun",
         "crumb-bun"
     ],
-    "private": true,
+    "private": false,
     "scripts": {
         "lint": "bunx biome check",
         "build": "bunx rollup -c"
-    },
-    "dependencies": {
-        "@rollup/plugin-terser": "^0.4.4"
     }
 }

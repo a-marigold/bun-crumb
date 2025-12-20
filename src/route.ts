@@ -57,6 +57,14 @@ import type { RouteOptions } from './types';
  * ```
  */
 
-export const createRoute = (routeOptions: RouteOptions) => {
-    _routes.set(routeOptions.url, { [routeOptions.method]: routeOptions });
+export const createRoute = (routeOptions: RouteOptions): void => {
+    const route = _routes.get(routeOptions.url);
+
+    if (!route) {
+        _routes.set(routeOptions.url, { [routeOptions.method]: routeOptions });
+
+        return;
+    }
+
+    route[routeOptions.method] = routeOptions;
 };
