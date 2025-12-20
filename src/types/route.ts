@@ -1,7 +1,5 @@
 // TODO: add docs
 
-import type { HeadersInit } from 'bun';
-
 export type HttpMethod =
     | 'GET'
     | 'POST'
@@ -15,7 +13,7 @@ export type Header = {
 
     value: string;
 };
-export type Headers = HeadersInit;
+export type Headers = ResponseInit['headers'];
 
 export type RouteRequest<T extends { body: unknown } = { body: unknown }> =
     Omit<Request, 'body'> & {

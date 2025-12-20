@@ -24,7 +24,9 @@ const wrapRouteCallback = (
 ): WrappedRouteCallback => {
     return (request) => {
         let status = 200;
+
         let body: unknown = null;
+
         let headers: Headers = {};
 
         const routeRequest: RouteRequest = request;
@@ -33,13 +35,22 @@ const wrapRouteCallback = (
             setHeader: (name, value) => {
                 headers[name] = value;
             },
+
             send: (data) => {
                 body = data;
             },
         };
 
+        if (typeof body === 'object') {
+            headers['Content-Type'] = 'application/json';
+        } else {
+            headers['Content-Type'] = 'text/plain';
+        }
+
         routeOptions.onRequest?.(routeRequest, routeResponse);
+
         routeOptions.preHandler?.(routeRequest, routeResponse);
+
         routeOptions.handler(routeRequest, routeResponse);
 
         return new Response(JSON.stringify(body), { headers, status });
@@ -63,15 +74,12 @@ const prepareRoute = (route: Route): PreparedRoute => {
 const prepareRoutes = (): PreparedRoutes => {
     const preparedRoutes: PreparedRoutes = {};
 
-    // TODO: rewrite it with forof loop
-
-    _routes.forEach((options, url) => {
-        preparedRoutes[url] = prepareRoute(options);
-    });
+    for (const route of _routes) {
+        preparedRoutes[route[0]] = prepareRoute(route[1]);
+    }
 
     return preparedRoutes;
 };
-
 export const listen = (port?: number, hostname?: string): void => {
     serve({
         port,
