@@ -1,5 +1,7 @@
 // TODO: add docs
 
+import type { BunRequest } from 'bun';
+
 /**
  * HTTP Method primitive.
  *
@@ -26,7 +28,7 @@ export type Header = {
 export type Headers = ResponseInit['headers'];
 
 export interface RouteRequest<T extends { body: unknown } = { body: unknown }>
-    extends Omit<Request, 'body'> {
+    extends Omit<BunRequest, 'body'> {
     body: T extends { body: unknown } ? T['body'] : unknown;
 }
 
@@ -39,7 +41,7 @@ export interface RouteResponse<
     T extends { body: unknown } = { body: unknown }
 > {
     setHeader: (name: Header['name'], value: Header['value']) => void;
-    send: (data: T['body'], options: ResponseOptions) => void;
+    send: (data: T['body'], options?: ResponseOptions) => void;
 }
 
 export type Route = Partial<Record<HttpMethod, RouteOptions>>;
