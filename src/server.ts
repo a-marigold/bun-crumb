@@ -2,6 +2,8 @@ import { serve } from 'bun';
 
 import type { BunRequest } from 'bun';
 
+import { HttpError } from './errors/HttpError';
+
 import type {
     Route,
     RouteOptions,
@@ -25,9 +27,79 @@ type PreparedRoutes = Record<RouteOptions['url'], PreparedRoute>;
  */
 export const _routes = new Map<RouteOptions['url'], Route>();
 
+const handleBody = (
+    request: BunRequest,
+    contentType: string
+): Promise<unknown> => {
+    const contentHandlers = {
+        'application/json': () => {
+            return request
+                .json()
+                .catch((error) => {
+                    throw new HttpError(400, error);
+                })
+                .then((data) => data);
+        },
+        'text/plain': () => {
+            return request.text().then((data) => data);
+        },
+    };
+
+    return contentType in contentHandlers
+        ? contentHandlers[contentType as keyof typeof contentHandlers]()
+        : Promise.reject(new HttpError(415, 'Unsupported media type'));
+};
+
+const handleRequest = (
+    request: BunRequest,
+    body: unknown,
+    routeOptions: RouteOptions
+): Response => {
+    let status: number | undefined = undefined;
+    let statusText: string | undefined = undefined;
+
+    let responseBody: unknown = null;
+    let responseHeaders: Headers = {};
+
+    const routeRequest: RouteRequest = request;
+    const routeResponse: RouteResponse = {
+        setHeader: (name, value) => {
+            responseHeaders[name] = value;
+        },
+        send: (data, options) => {
+            if (typeof data === 'object') {
+                responseHeaders['Content-Type'] = 'application/json';
+            } else if (typeof data === 'string') {
+                responseHeaders['Content-Type'] = 'text/plain';
+            }
+
+            responseBody = data;
+
+            status = options?.status;
+            statusText = options?.statusText;
+        },
+    };
+
+    routeOptions.onRequest?.(routeRequest, routeResponse);
+
+    routeOptions.preHandler?.(routeRequest, routeResponse);
+
+    routeOptions.handler(routeRequest, routeResponse);
+
+    return new Response(
+        responseBody === null ? null : JSON.stringify(responseBody),
+        {
+            headers: responseHeaders,
+            status,
+            statusText,
+        }
+    );
+};
+
 /**
  * Internal `server` function.
  * Creates a function with handler and all route hooks.
+ *
  * The created function can be used as a callback for route in Bun.serve `routes` object.
  *
  *
@@ -39,50 +111,19 @@ export const wrapRouteCallback = (
     routeOptions: RouteOptions
 ): WrappedRouteCallback => {
     return (request) => {
-        let status: number | undefined = undefined;
+        const contentType = request.headers.get('Content-Type') ?? 'text/plain';
 
-        let statusText: string | undefined = undefined;
-
-        let responseBody: unknown = null;
-
-        let headers: Headers = {};
-
-        const routeRequest: RouteRequest = request;
-        const bodyPromise = request.body?.json() ?? Promise.resolve(undefined);
-
-        return bodyPromise.then((data) => {
-            routeRequest.body = data;
-
-            const routeResponse: RouteResponse = {
-                setHeader: (name, value) => {
-                    headers[name] = value;
-                },
-
-                send: (data, options) => {
-                    responseBody = data;
-
-                    status = options?.status;
-                    statusText = options?.statusText;
-                },
-            };
-
-            if (typeof responseBody === 'object') {
-                headers['Content-Type'] = 'application/json';
-            } else {
-                headers['Content-Type'] = 'text/plain';
-            }
-
-            routeOptions.onRequest?.(routeRequest, routeResponse);
-
-            routeOptions.preHandler?.(routeRequest, routeResponse);
-
-            routeOptions.handler(routeRequest, routeResponse);
-            return new Response(JSON.stringify(responseBody), {
-                headers,
-                status,
-                statusText,
+        return handleBody(request, contentType)
+            .catch((error) => {
+                if (error instanceof HttpError) {
+                    return new Response(error.message, {
+                        status: error.status,
+                    });
+                }
+            })
+            .then((body) => {
+                return handleRequest(request, body, routeOptions);
             });
-        });
     };
 };
 
