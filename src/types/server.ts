@@ -23,7 +23,7 @@ export interface ListenOptions {
     development?: boolean;
 
     /**
-     * Global schema validator that will be used in every route
+     * Global schema validator function that will be used in every route
      */
     schemaValidator?: Validator;
 }
