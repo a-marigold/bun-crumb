@@ -1,18 +1,20 @@
-import { describe, it, expect, test } from 'bun:test';
+import { describe, it, expect } from 'bun:test';
 
 import type { BunRequest } from 'bun';
 
 import {
+    handleBody,
     wrapRouteCallback,
     prepareRoute,
     prepareRoutes,
-    listen,
 } from '../server';
+
 import type { Routes } from '../server';
 
 describe('wrapRouteCallback', () => {
     it('should return a working wrapped callback', () => {
         const responseData = 'Hello';
+
         const testWrappedCallback = wrapRouteCallback({
             url: '/test',
             method: 'GET',
@@ -119,5 +121,35 @@ describe('prepareRoutes', () => {
 
         expect(testPreparedRoutes['/test1']?.GET).toBeTypeOf('function');
         expect(testPreparedRoutes['/test2']?.PATCH).toBeTypeOf('function');
+    });
+});
+
+describe('handleBody', () => {
+    it('should return a correct parsed json', () => {
+        const testData = { key: 'value' };
+
+        const testRequest = {
+            json: () => {
+                return Promise.resolve(testData);
+            },
+        } as BunRequest;
+
+        handleBody(testRequest, 'application/json').then((bodyData) => {
+            expect(bodyData).toEqual(testData);
+        });
+    });
+
+    it('should return a correct parsed text/plain', () => {
+        const testData = 'Test string';
+
+        const testRequest = {
+            text: () => {
+                return Promise.resolve(testData);
+            },
+        } as BunRequest;
+
+        handleBody(testRequest, 'text/plain').then((bodyData) => {
+            expect(bodyData).toBe(testData);
+        });
     });
 });

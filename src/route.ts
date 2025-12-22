@@ -2,7 +2,6 @@ import { _routes } from './server';
 
 import type { RouteOptions } from './types';
 
-// TODO: fix this gaps
 /**
  * Creates a route with `url`, `method` and `handler`.
  * Should be called before `listen` function is called.

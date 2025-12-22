@@ -33,7 +33,18 @@ export type Routes = Map<RouteOptions['url'], Route>;
  */
 export const _routes: Routes = new Map();
 
-const handleBody = (
+/**
+ * Runtime function that used in request.
+ * Parses body to supported content type (json, plain text) and validates it with route schema.
+ *
+ * @param {BunRequest} request incoming bun request
+ * @param {string} contentType request `Content-Type` header value
+ * @param {Schema} schema
+ * @param {Validate} schemaValidator
+ *
+ * @returns {Promise<unknown>} Promise with body
+ */
+export const handleBody = (
     request: BunRequest,
     contentType: string,
     schema?: Schema,
