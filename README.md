@@ -2,11 +2,11 @@
 
 <div align='center'>  
  
- [![CI](https://github.com/a-marigold/crumb/actions/workflows/ci.yaml/badge.svg)](https://github.com/a-marigold/crumb/actions)
-
-[![npm](https://img.shields.io/npm/v/crumb)](https://npmjs.com)
+ [![CI](https://github.com/a-marigold/crumb/actions/workflows/ci.yaml/badge.svg)](https://github.com/a-marigold/crumb/actions) ![bun](https://img.shields.io/badge/Bun-000?logo=bun&logoColor=fff) [![npm](https://img.shields.io/npm/v/bun-crumb)](https://npmjs.com/package/bun-crumb)
 
 </div>
+ 
+
 
 ### Features
 

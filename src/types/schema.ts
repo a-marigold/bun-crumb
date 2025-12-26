@@ -26,14 +26,12 @@
  * ```
  */
 // biome-ignore lint: lint/correctness/noUnusedFunctionParameters
-export interface Schema {
-    data: unknown;
-}
+export interface Schema {}
 
 /**
  * Straight `Schema` type
  */
-export type SchemaData = Schema['data'];
+export type SchemaData = Schema[keyof Schema];
 
 /**
  * The schema validator function type.

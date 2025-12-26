@@ -31,7 +31,7 @@
     "keywords": [
         "typescript",
         "bun",
-        "crumb-bun"
+        "bun-crumb"
     ],
     "private": false,
     "scripts": {

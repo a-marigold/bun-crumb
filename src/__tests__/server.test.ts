@@ -1,3 +1,5 @@
+// TODO: separate this
+
 import { describe, it, expect } from 'bun:test';
 
 import type { BunRequest } from 'bun';
@@ -107,7 +109,7 @@ describe('wrapRouteCallback', () => {
             {
                 url: '/products',
                 method: 'POST',
-                schema: testSchema,
+                schema: testSchema as unknown as undefined,
                 handler: (
                     request: RouteRequest<{ parsedBody: TestBody }>,
                     response: RouteResponse<{ body: TestBody }>
@@ -326,7 +328,12 @@ describe('handleBody', () => {
             return data === schema;
         };
 
-        handleBody(testRequest, 'text/plain', testSchema, schemaValidator);
+        handleBody(
+            testRequest,
+            'text/plain',
+            testSchema as unknown as undefined,
+            schemaValidator
+        );
     });
 
     it('should throw an error if text/plain does not match schema', () => {
@@ -345,7 +352,7 @@ describe('handleBody', () => {
         handleBody(
             testTextRequest,
             'text/plain',
-            schema,
+            schema as unknown as undefined,
             schemaValidator
         ).catch((error) => {
             expect(error).toBeInstanceOf(HttpError);
@@ -371,7 +378,8 @@ describe('handleBody', () => {
         handleBody(
             testJsonRequest,
             'application/json',
-            schema,
+
+            schema as unknown as undefined,
             schemaValidator
         ).catch((error) => {
             expect(error).toBeInstanceOf(HttpError);
