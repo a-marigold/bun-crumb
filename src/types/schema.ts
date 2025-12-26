@@ -26,13 +26,18 @@
  * ```
  */
 // biome-ignore lint: lint/correctness/noUnusedFunctionParameters
-export interface Schema {}
+export interface Schema {
+    data: unknown;
+}
+
+/**
+ * Straight `Schema` type
+ */
+export type SchemaData = Schema['data'];
 
 /**
  * The schema validator function type.
  *
  * Supports any schemas like `zod`, `ajv`, `yup`
  */
-export type Validate = (data: unknown, schema: Schema) => boolean;
-
-export type SchemaData = Schema[keyof Schema];
+export type Validate = (data: unknown, schema: SchemaData) => boolean;

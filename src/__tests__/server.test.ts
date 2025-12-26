@@ -98,8 +98,8 @@ describe('wrapRouteCallback', () => {
                 typeof data === 'object' &&
                 data !== null &&
                 'price' in data &&
-                'price' in schema &&
-                typeof data.price === typeof schema.price
+                'price' in (schema as TestBody) &&
+                typeof data.price === typeof (schema as TestBody).price
             );
         };
 
