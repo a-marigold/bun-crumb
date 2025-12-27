@@ -62,7 +62,7 @@ export type Route = Partial<Record<HttpMethod, RouteOptions>>;
 export type RouteHandler = (
     request: RouteRequest,
     response: RouteResponse
-) => void;
+) => Promise<void> | void;
 
 export type RouteOptions = {
     url: string;

@@ -102,7 +102,7 @@ export const handleBody = (
 const handleRequest = (
     routeRequest: RouteRequest,
     routeOptions: RouteOptions
-): Response => {
+): Promise<Response> => {
     let status: number | undefined = undefined;
     let statusText: string | undefined = undefined;
 
@@ -127,21 +127,18 @@ const handleRequest = (
         },
     };
 
-    routeOptions.onRequest?.(routeRequest, routeResponse);
-
-    routeOptions.preHandler?.(routeRequest, routeResponse);
-
-    routeOptions.handler(routeRequest, routeResponse);
-
-    return new Response(
-        responseBody === null || responseBody === undefined
-            ? null
-            : JSON.stringify(responseBody),
-        {
-            headers: responseHeaders,
-            status,
-            statusText,
-        }
+    return Promise.all([
+        routeOptions.onRequest?.(routeRequest, routeResponse),
+        routeOptions.preHandler?.(routeRequest, routeResponse),
+        routeOptions.handler(routeRequest, routeResponse),
+    ]).then(
+        () =>
+            new Response(
+                responseBody === null || responseBody === undefined
+                    ? null
+                    : JSON.stringify(responseBody),
+                { headers: responseHeaders, status, statusText }
+            )
     );
 };
 
