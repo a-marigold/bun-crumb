@@ -1,8 +1,6 @@
 ### runtime
 
--   [] add lazy body handling
+-   [x] add lazy body handling
 
 -   [] divide route schema on:
     request, response schemas
-
--   Schema['data'] interface

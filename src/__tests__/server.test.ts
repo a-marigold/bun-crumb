@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'bun:test';
 
-import type { BunRequest, password } from 'bun';
+import type { BunRequest } from 'bun';
 
 import { HttpError } from '../errors/HttpError';
 
@@ -61,9 +61,9 @@ describe('wrapRouteCallback', () => {
                     request: RouteRequest<{ body: RequestData }>,
                     response
                 ) => {
-                    const body = await request.handleBody();
+                    await request.handleBody();
 
-                    response.send('Success');
+                    return response.send('Success');
                 },
             },
             schemaValidator
