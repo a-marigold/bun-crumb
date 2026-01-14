@@ -70,9 +70,5 @@ export type RouteOptions = {
 
     schema?: SchemaData;
 
-    onRequest?: RouteHandler;
-
-    preHandler?: RouteHandler;
-
     handler: RouteHandler;
 };

@@ -103,10 +103,10 @@ const handleRequest = (
     routeRequest: RouteRequest,
     routeOptions: RouteOptions
 ): Promise<Response> => {
-    let status: number | undefined = undefined;
-    let statusText: string | undefined = undefined;
+    let status: number = 200;
+    let statusText: string | undefined = '';
 
-    let responseBody: unknown = null;
+    let responseBody: string = '';
     const responseHeaders: Headers = {};
 
     const routeResponse: RouteResponse = {
@@ -116,29 +116,30 @@ const handleRequest = (
         send: (data, options) => {
             if (typeof data === 'object') {
                 responseHeaders['Content-Type'] = 'application/json';
+
+                responseBody = JSON.stringify(data);
             } else if (typeof data === 'string') {
                 responseHeaders['Content-Type'] = 'text/plain';
+
+                responseBody = data;
             }
 
-            responseBody = data;
-
-            status = options?.status;
-            statusText = options?.statusText;
+            if (options) {
+                status = options.status;
+                statusText = options.statusText;
+            }
         },
     };
 
-    return Promise.all([
-        routeOptions.onRequest?.(routeRequest, routeResponse),
-        routeOptions.preHandler?.(routeRequest, routeResponse),
-        routeOptions.handler(routeRequest, routeResponse),
-    ]).then(
+    return Promise.resolve(
+        routeOptions.handler(routeRequest, routeResponse)
+    ).then(
         () =>
-            new Response(
-                responseBody === null || responseBody === undefined
-                    ? null
-                    : JSON.stringify(responseBody),
-                { headers: responseHeaders, status, statusText }
-            )
+            new Response(responseBody, {
+                headers: responseHeaders,
+                status,
+                statusText,
+            })
     );
 };
 
