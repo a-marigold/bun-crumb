@@ -19,6 +19,8 @@ export type HttpMethod =
     | 'DELETE'
     | 'OPTIONS';
 
+export type RedirectStatusCode = 300 | 301 | 302 | 303 | 304 | 307 | 308;
+
 /**
  * HTTP Header struct.
  */
@@ -26,6 +28,7 @@ export type Header = {
     name: string;
     value: string;
 };
+
 export type Headers = ResponseInit['headers'];
 
 /**
@@ -55,6 +58,7 @@ export interface RouteResponse<
 > {
     setHeader: (name: Header['name'], value: Header['value']) => void;
     send: (data: T['body'], options?: ResponseOptions) => void;
+    redirect: (url: string, status: RedirectStatusCode | (number & {})) => void;
 }
 
 export type Route = Partial<Record<HttpMethod, RouteOptions>>;

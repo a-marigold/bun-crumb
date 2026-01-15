@@ -129,6 +129,11 @@ const handleRequest = (
                 statusText = options.statusText;
             }
         },
+        redirect: (url, redirectStatus) => {
+            responseBody = '';
+            status = redirectStatus;
+            responseHeaders['Location'] = url;
+        },
     };
 
     return Promise.resolve(
@@ -293,11 +298,11 @@ export const prepareRoutes = (
  * listen(PORT, 'localhost');
  * ```
  */
-export const listen = (options: ListenOptions): void => {
+export const listen = (options?: ListenOptions): void => {
     serve({
-        port: options.port,
-        hostname: options.hostname,
-        development: options.development ?? false,
+        port: options?.port,
+        hostname: options?.hostname,
+        development: options?.development ?? false,
 
         routes: prepareRoutes(_routes, options?.schemaValidator),
     });
