@@ -37,16 +37,19 @@ describe('createRoute', () => {
         });
 
         expect(_routes.get('/test')?.GET).toHaveProperty('handler');
-        expect(_routes.get('/test')?.GET).not.toHaveProperty('preHandler');
+
+        expect(_routes.get('/test')?.GET).not.toHaveProperty('schema');
 
         createRoute({
             url: '/test',
+
             method: 'GET',
 
-            preHandler: () => {},
+            schema: 'SCHEMA' as unknown as undefined,
+
             handler: () => {},
         });
 
-        expect(_routes.get('/test')?.GET).toHaveProperty('preHandler');
+        expect(_routes.get('/test')?.GET).toHaveProperty('schema');
     });
 });
