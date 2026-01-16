@@ -110,22 +110,19 @@ const handleRequest = (
     let statusText: string | undefined = '';
 
     let responseBody: BodyInit = '';
-    const responseHeaders: Headers = {};
+    const responseHeaders: Headers = new Headers();
 
     const routeResponse: RouteResponse = {
-        setHeader: (name, value) => {
-            responseHeaders[name.toLowerCase()] = value;
-        },
         send: (data, options) => {
             if (typeof data === 'object') {
-                if (!responseHeaders['content-type']) {
-                    responseHeaders['content-type'] = 'application/json';
+                if (!responseHeaders.has('Content-Type')) {
+                    responseHeaders.set('Content-Type', 'application/json');
                 }
 
                 responseBody = JSON.stringify(data);
             } else if (typeof data === 'string') {
-                if (!responseHeaders['content-type']) {
-                    responseHeaders['content-type'] = 'text/plain';
+                if (!responseHeaders.has('Content-Type')) {
+                    responseHeaders.set('Content-Type', 'text/plain');
                 }
 
                 responseBody = data;
@@ -138,11 +135,19 @@ const handleRequest = (
                 statusText = options.statusText;
             }
         },
+
         redirect: (url, redirectStatus) => {
             responseBody = '';
+
             status = redirectStatus || 302;
-            responseHeaders['location'] = url;
+            responseHeaders.set('Location', url);
         },
+
+        setHeader: (name, value) => {
+            responseHeaders.set(name, value);
+        },
+
+        setCookie: (name, value, options) => {},
     };
 
     return Promise.resolve(

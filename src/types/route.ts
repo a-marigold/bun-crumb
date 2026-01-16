@@ -3,45 +3,34 @@
 import type { BunRequest } from 'bun';
 import type { SchemaData } from './schema';
 
-/**
- * HTTP Method primitive.
- *
- *
- * @example
- * ```typescript
- * const method: HttpMethod = 'GET';
- * ```
- */
-export type HttpMethod =
-    | 'GET'
-    | 'POST'
-    | 'PUT'
-    | 'PATCH'
-    | 'DELETE'
-    | 'OPTIONS'
-    | 'HEAD';
-
-export type RedirectStatusCode =
-    | 300
-    | 301
-    | 302
-    | 303
-    | 304
-    | 305
-    | 306
-    | 307
-    | 308;
+import type {
+    Header,
+    HttpMethod,
+    RedirectStatusCode,
+    SameSiteCookie,
+} from './utils';
 
 /**
- * HTTP Header struct.
+ *
+ *
+ * `options` of `RouteResponse.setCookie` parameter
  */
-export type Header = {
-    name: string;
-    value: string;
+export type CookieOptions = {
+    domain: string;
+    expires: string;
+    httpOnly: boolean;
+    maxAge: number;
+
+    path: string;
+
+    sameSite: SameSiteCookie;
+
+    secure: boolean;
 };
-
-export type Headers = ResponseInit['headers'];
-
+/**
+ *
+ * Type of Request search parameters
+ */
 export type RouteRequestParams<T extends string | undefined = undefined> = [
     T
 ] extends [string]
@@ -51,14 +40,7 @@ export type RouteRequestParams<T extends string | undefined = undefined> = [
     : { [key: string]: string | undefined };
 
 /**
- *
- *
  * Type of RouteRequest generic
- *
- *
- *
- *
- *
  */
 export interface RouteRequestGeneric {
     body?: unknown;
@@ -67,7 +49,9 @@ export interface RouteRequestGeneric {
 }
 
 /**
- * Type of route handler `request`
+ *
+ *
+ * Type of route handler `request` parameter
  */
 export interface RouteRequest<
     T extends RouteRequestGeneric = RouteRequestGeneric
@@ -107,30 +91,6 @@ export interface ResponseOptions {
 export interface RouteResponse<
     T extends { body: unknown } = { body: unknown }
 > {
-    /**
-     * Sets the response header.
-     *
-     *
-     *
-     *
-     * Overrides header if it already exists.
-     *
-     * Case of `name` is not important. Names 'content-type', 'Content-Type', 'CoNteNt=TYPE' are the same.
-     *
-     *
-     * @param name header name
-     * @param value header value
-     *
-     *
-     * @example
-     * ```typescript
-     * response.setHeader('Access-Control-Allow-Origin', '*');
-     * // The code below will override the header above
-     * response.setHeader('access-control-allow-origin', 'https://bun-crumb.vercel.app');
-     * ```
-     */
-    setHeader: (name: Header['name'], value: Header['value']) => void;
-
     send: (data: T['body'], options?: ResponseOptions) => void;
 
     /**
@@ -158,6 +118,32 @@ export interface RouteResponse<
         url: string,
         status?: RedirectStatusCode | (number & {})
     ) => void;
+
+    /**
+     * Sets the response header.
+     *
+     *
+     *
+     *
+     * Overrides header if it already exists.
+     *
+     * Case of `name` is not important. Names 'content-type', 'Content-Type', 'CoNteNt=TYPE' are the same.
+     *
+     *
+     * @param name header name
+     * @param value header value
+     *
+     *
+     * @example
+     * ```typescript
+     * response.setHeader('Access-Control-Allow-Origin', '*');
+     * // The code below will override the header above
+     * response.setHeader('access-control-allow-origin', 'https://bun-crumb.vercel.app');
+     * ```
+     */
+    setHeader: (name: Header['name'], value: Header['value']) => void;
+
+    setCookie: (name: string, value: string, options: CookieOptions) => void;
 }
 
 export type Route = Partial<Record<HttpMethod, RouteOptions>>;

@@ -231,13 +231,16 @@ describe('wrapRouteCallback', () => {
 
             const wrappedCallback = wrapRouteCallback({
                 url: '/test',
+
                 method: 'GET',
+
                 handler: (_request, response) => {
                     return response.redirect(redirectLocation);
                 },
             });
 
             const request = new Request('http://localhost:3000') as BunRequest;
+
             wrappedCallback(request).then((response) => {
                 expect(response.headers.get('locaTioN')).toBe(redirectLocation);
 
