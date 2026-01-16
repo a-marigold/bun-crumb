@@ -1,4 +1,4 @@
-import { serve } from 'bun';
+import { serve, Cookie } from 'bun';
 
 import type { BunRequest } from 'bun';
 
@@ -147,7 +147,12 @@ const handleRequest = (
             responseHeaders.set(name, value);
         },
 
-        setCookie: (name, value, options) => {},
+        setCookie: (options) => {
+            responseHeaders.append(
+                'Set-Cookie',
+                new Cookie(options).toString()
+            );
+        },
     };
 
     return Promise.resolve(

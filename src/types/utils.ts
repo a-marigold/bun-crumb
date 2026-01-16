@@ -36,5 +36,3 @@ export type Header = {
 };
 
 export type Headers = ResponseInit['headers'];
-
-export type SameSiteCookie = 'Strict' | 'Lax' | 'None';

@@ -1,32 +1,10 @@
 // TODO: add docs
 
-import type { BunRequest } from 'bun';
+import type { BunRequest, CookieInit } from 'bun';
 import type { SchemaData } from './schema';
 
-import type {
-    Header,
-    HttpMethod,
-    RedirectStatusCode,
-    SameSiteCookie,
-} from './utils';
+import type { Header, HttpMethod, RedirectStatusCode } from './utils';
 
-/**
- *
- *
- * `options` of `RouteResponse.setCookie` parameter
- */
-export type CookieOptions = {
-    domain: string;
-    expires: string;
-    httpOnly: boolean;
-    maxAge: number;
-
-    path: string;
-
-    sameSite: SameSiteCookie;
-
-    secure: boolean;
-};
 /**
  *
  * Type of Request search parameters
@@ -143,7 +121,7 @@ export interface RouteResponse<
      */
     setHeader: (name: Header['name'], value: Header['value']) => void;
 
-    setCookie: (name: string, value: string, options: CookieOptions) => void;
+    setCookie: (options: CookieInit) => void;
 }
 
 export type Route = Partial<Record<HttpMethod, RouteOptions>>;
