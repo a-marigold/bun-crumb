@@ -1,6 +1,6 @@
 {
     "name": "bun-crumb",
-    "version": "0.12.1",
+    "version": "0.12.2",
     "author": "marigold",
     "module": "dist/index.js",
     "license": "UNLICENSED",
@@ -17,6 +17,7 @@
         "rollup-plugin-dts": "^6.3.0",
         "tslib": "^2.8.1"
     },
+    "homepage": "https://bun-crumb.vercel.app",
     "files": [
         "dist"
     ],
