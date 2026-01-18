@@ -5,7 +5,7 @@ import type { BunRequest } from 'bun';
 import { HttpError } from '../errors/HttpError';
 import type { Validate } from '../types';
 
-import { handleBody } from '../server';
+import { handleBody } from '../runtime';
 
 describe('handleBody', () => {
     it('should return a correct parsed json', () => {
@@ -68,7 +68,7 @@ describe('handleBody', () => {
             testRequest,
             'text/plain',
             testSchema as unknown as undefined,
-            schemaValidator
+            schemaValidator,
         );
     });
 
@@ -89,7 +89,7 @@ describe('handleBody', () => {
             testTextRequest,
             'text/plain',
             schema as unknown as undefined,
-            schemaValidator
+            schemaValidator,
         ).catch((error) => {
             expect(error).toBeInstanceOf(HttpError);
 
@@ -116,7 +116,7 @@ describe('handleBody', () => {
             'application/json',
 
             schema as unknown as undefined,
-            schemaValidator
+            schemaValidator,
         ).catch((error) => {
             expect(error).toBeInstanceOf(HttpError);
             expect(error).toHaveProperty('status', 400);

@@ -1,25 +1,23 @@
-import { serve, Cookie, stdout } from 'bun';
+import { serve, stdout } from 'bun';
 
 import type { BunRequest } from 'bun';
-
-import type { BodyInit } from 'bun';
 
 import { HttpError } from './errors/HttpError';
 
 import type {
     Route,
     RouteOptions,
+    ListenOptions,
     RouteRequest,
-    RouteResponse,
+    Validate,
     HttpMethod,
 } from './types';
-import type { SchemaData, Validate } from './types';
 
-import type { ListenOptions } from './types';
+import { handleBody, handleRequest } from './runtime';
 
 type PreparedRoute = Partial<Record<HttpMethod, WrappedRouteCallback>>;
 
-export type WrappedRouteCallback = (request: BunRequest) => Promise<Response>;
+type WrappedRouteCallback = (request: BunRequest) => Promise<Response>;
 
 /**
  * Used straight as Bun.serve `routes` object.
@@ -29,152 +27,16 @@ type PreparedRoutes = Record<RouteOptions['url'], PreparedRoute>;
 export type Routes = Map<RouteOptions['url'], Route>;
 
 /**
- * An internal Map with routes of app. Do not use it in user code to prevent undefined errors
+ * *Internal server object.*
+ *
+ * `Map` with routes of app. Do not use it in user code to prevent undefined errors
  */
+
 export const _routes: Routes = new Map();
 
 /**
+ * *Internal server function.*
  *
- *
- *
- * Parses body to supported content type (json, plain text) and validates it with route schema.
- *
- * @param {BunRequest} request incoming bun request.
- * @param {string} contentType request `Content-Type` header value.
- * @param {Schema} schema json or any schema with declared `Schema` type.
- * @param {Validate} schemaValidator schema validator function that receives `data` and `schema` arguments.
- *
- * @returns {Promise<unknown>} Promise with body
- *
- *
- *
- *
- */
-export const handleBody = (
-    request: BunRequest,
-    contentType: string,
-
-    schema?: SchemaData,
-    schemaValidator?: Validate,
-): Promise<unknown> => {
-    const contentHandlers = {
-        'application/json': (request: BunRequest) => {
-            return request
-                .json()
-                .catch(() => {
-                    throw new HttpError(400, 'Bad Request');
-                })
-                .then((data) => {
-                    if (
-                        schema &&
-                        schemaValidator &&
-                        !schemaValidator(data, schema)
-                    ) {
-                        throw new HttpError(
-                            400,
-                            'Request does not match schema',
-                        );
-                    }
-                    return data;
-                });
-        },
-
-        'text/plain': (request: BunRequest) => {
-            return request
-                .text()
-
-                .catch((error) => {
-                    throw new HttpError(400, error);
-                })
-                .then((data) => {
-                    if (
-                        schema &&
-                        schemaValidator &&
-                        !schemaValidator(data, schema)
-                    ) {
-                        throw new HttpError(
-                            400,
-                            'Request does not match schema',
-                        );
-                    }
-                    return data;
-                });
-        },
-    };
-
-    return contentType in contentHandlers
-        ? contentHandlers[contentType as keyof typeof contentHandlers](request)
-        : Promise.reject(new HttpError(415, 'Unsupported media type'));
-};
-
-const handleRequest = (
-    routeRequest: RouteRequest,
-    routeOptions: RouteOptions,
-): Promise<Response> => {
-    let status: number = 200;
-    let statusText: string | undefined = '';
-
-    let responseBody: BodyInit = '';
-    const responseHeaders: Headers = new Headers();
-
-    const routeResponse: RouteResponse = {
-        send: (data, options) => {
-            if (typeof data === 'object') {
-                if (!responseHeaders.has('Content-Type')) {
-                    responseHeaders.set('Content-Type', 'application/json');
-                }
-
-                responseBody = JSON.stringify(data);
-            } else if (typeof data === 'string') {
-                if (!responseHeaders.has('Content-Type')) {
-                    responseHeaders.set('Content-Type', 'text/plain');
-                }
-
-                responseBody = data;
-            } else {
-                responseBody = data as BodyInit;
-            }
-
-            if (options) {
-                status = options.status;
-                statusText = options.statusText;
-            }
-        },
-
-        redirect: (url, redirectStatus) => {
-            responseBody = '';
-
-            status = redirectStatus || 302;
-            responseHeaders.set('Location', url);
-        },
-
-        setHeader: (name, value) => {
-            responseHeaders.set(name, value);
-        },
-
-        setCookie: (options) => {
-            responseHeaders.append(
-                'Set-Cookie',
-                new Cookie(options).toString(),
-            );
-        },
-    };
-
-    return Promise.resolve(
-        routeOptions.handler(routeRequest, routeResponse),
-    ).then(
-        () =>
-            new Response(responseBody, {
-                headers: responseHeaders,
-
-                status,
-                statusText,
-            }),
-    );
-};
-
-/**
- * Internal `server` function.
  * Creates a function with handler and all route hooks.
  *
  * The created function can be used as a callback for route in Bun.serve `routes` object.
@@ -232,7 +94,8 @@ export const wrapRouteCallback = (
 };
 
 /**
- * Internal `server` function.
+ * *Internal server function.*
+ *
  * Prepares a route to be used in Bun.serve `routes` object.
  *
  * @param {Route} route
@@ -290,8 +153,10 @@ export const prepareRoute = (
 };
 
 /**
- * Internal server function.
- * Calls `prepareRoute` for every route of `routes` Map and returns prepared routes to use in Bun.serve `routes`.
+ * *Internal server function.*
+ *
+ *
+ * Calls `prepareRoute` function for every route of `_routes` Map and returns prepared routes to use in `Bun.serve` `routes`.
  *
  * @param {Routes} routes Map with routes to prepare.
  *
@@ -312,7 +177,7 @@ export const prepareRoutes = (
 
 /**
  *
- *  Starts to serve http server.
+ * Starts to serve http server.
  *
  *
  * @param {ListenOption} options - options

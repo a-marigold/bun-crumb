@@ -34,7 +34,7 @@ const HEADER_KEY_START = 'key_';
     console.log('  get loop: ' + (getLoopEnd - getLoopStart) + 'ms');
     console.log('  res initialization: ' + resDiff + 'ms');
     console.log(
-        'total: ' + (createDiff + setLoopDiff + getLoopDiff + resDiff) + 'ms'
+        'total: ' + (createDiff + setLoopDiff + getLoopDiff + resDiff) + 'ms',
     );
 })();
 
@@ -59,9 +59,7 @@ console.log('');
 
     const getLoopEnd = performance.now();
 
-    const initializationStart = performance.now();
     new Headers(init);
-    const initializationEnd = performance.now();
 
     const resInitializationStart = performance.now();
     new Response('', { headers: init });
@@ -78,6 +76,6 @@ console.log('');
     console.log('  get loop: ' + getLoopDiff + 'ms');
     console.log('  res initialization: ' + resDiff + 'ms');
     console.log(
-        'total: ' + (createDiff + setLoopDiff + getLoopDiff + resDiff) + 'ms'
+        'total: ' + (createDiff + setLoopDiff + getLoopDiff + resDiff) + 'ms',
     );
 })();

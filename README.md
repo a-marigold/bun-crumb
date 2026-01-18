@@ -26,10 +26,11 @@ bun add bun-crumb
 Handling Requests
 
 ```typescript
-import { createRoute, type RouteResponse } from 'bun-crumb';
+import { createRoute, listen, type RouteResponse } from 'bun-crumb';
+
+const PORT = process.env.PORT ?? 3200;
 
 type Product = { title: string; price: number; id: number };
-
 const products: Product[] = [];
 
 createRoute({
@@ -51,6 +52,8 @@ createRoute({
         );
     },
 });
+
+listen({ port: PORT }); // This should be after all `createRoute` calls.
 ```
 
 ### Benchmarks

@@ -25,7 +25,7 @@ describe('wrapRouteCallback', () => {
 
             bodyPromise.then((bodyData) => {
                 expect(response.headers.get('Content-Type')).toBe(
-                    'application/json'
+                    'application/json',
                 );
 
                 expect(bodyData).toEqual(responseData);
@@ -55,14 +55,14 @@ describe('wrapRouteCallback', () => {
                     schema,
                     handler: async (
                         request: RouteRequest<{ body: RequestData }>,
-                        response
+                        response,
                     ) => {
                         await request.handleBody();
 
                         return response.send('Success');
                     },
                 },
-                schemaValidator
+                schemaValidator,
             );
 
             const testRequestData = { password: 123 };
@@ -92,7 +92,7 @@ describe('wrapRouteCallback', () => {
             });
 
             const testRequest = new Request(
-                'https://localhost:3000'
+                'https://localhost:3000',
             ) as BunRequest;
 
             jsonWrappedCallback(testRequest).then((response) => {
@@ -101,7 +101,7 @@ describe('wrapRouteCallback', () => {
                 bodyPromise.then((bodyData) => {
                     expect(bodyData).toEqual(jsonResponseData);
                     expect(response.headers.get('Content-Type')).toBe(
-                        'application/json'
+                        'application/json',
                     );
                 });
             });
@@ -117,7 +117,7 @@ describe('wrapRouteCallback', () => {
                 },
             });
             const testRequest = new Request(
-                'https://localhost:3000'
+                'https://localhost:3000',
             ) as BunRequest;
 
             jsonWrappedCallback(testRequest).then((response) => {
@@ -126,7 +126,7 @@ describe('wrapRouteCallback', () => {
                 bodyPromise.then((bodyData) => {
                     expect(bodyData).toBe(textResponesData);
                     expect(response.headers.get('Content-Type')).toBe(
-                        'text/plain'
+                        'text/plain',
                     );
                 });
             });
@@ -158,7 +158,7 @@ describe('wrapRouteCallback', () => {
                     handler: (
                         request: RouteRequest<{ body: TestBody }>,
 
-                        response: RouteResponse<{ body: TestBody }>
+                        response: RouteResponse<{ body: TestBody }>,
                     ) => {
                         return request.handleBody().then((bodyData) => {
                             return response.send({
@@ -167,7 +167,7 @@ describe('wrapRouteCallback', () => {
                         });
                     },
                 },
-                schemaValidator
+                schemaValidator,
             );
 
             const testRequestData = { price: '100' };
@@ -199,7 +199,7 @@ describe('wrapRouteCallback', () => {
 
                 handler: (
                     _request,
-                    response: RouteResponse<{ body: string }>
+                    response: RouteResponse<{ body: string }>,
                 ) => {
                     response.setHeader('cOnTent-TYPE', userContentType);
 
@@ -263,7 +263,7 @@ describe('wrapRouteCallback', () => {
                 method: 'GET',
                 handler: (
                     request,
-                    response: RouteResponse<{ body: ResponseData }>
+                    response: RouteResponse<{ body: ResponseData }>,
                 ) => {
                     return response.send({
                         params: request.params,
@@ -276,18 +276,18 @@ describe('wrapRouteCallback', () => {
 
             const request = new Request(requestUrl) as BunRequest;
 
-            (request as any).params = requestParams;
+            (request as RouteRequest).params = requestParams;
             wrappedCallback(request)
                 .then((response) => response.json())
                 .then((data) => {
                     const parsedUrl = new URL(requestUrl);
 
                     expect((data as ResponseData).params).toEqual(
-                        requestParams
+                        requestParams,
                     );
 
                     expect(JSON.stringify((data as ResponseData).query)).toBe(
-                        JSON.stringify(parsedUrl.searchParams)
+                        JSON.stringify(parsedUrl.searchParams),
                     );
                 });
         });
