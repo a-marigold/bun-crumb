@@ -105,7 +105,7 @@ export interface RouteResponse<
      * @example
      * ```typescript
      * response.send({key: 'value'}); // ❌ Without return, the code below changes the body of response
-     * response.send('Hello'); // ❌ This changes the body of response, but `Content-Type` header will not change
+     * response.send('Hello'); // ❌ This changes the body of response, but `Content-Type` header is the same
      * ```
      *
      */

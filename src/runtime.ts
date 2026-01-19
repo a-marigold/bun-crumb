@@ -21,7 +21,7 @@ type ContentHandler = (
  * An util function for throwing `HttpError` with 400 as code and 'Bad Request' as message
  */
 const throwBadRequestHttpError = () => {
-    throw new HttpError(400, 'Bad Request');
+    throw new HttpError(400, 'Bad request');
 };
 
 /**
@@ -112,11 +112,12 @@ export const handleRequest = (
     let statusText: string | undefined = '';
 
     let responseBody: BodyInit = '';
+
     const responseHeaders: Headers = new Headers();
 
     const routeResponse: RouteResponse = {
         send: (data, options) => {
-            if (typeof data === 'object') {
+            if (typeof data === 'object' && typeof data !== null) {
                 if (!responseHeaders.has('Content-Type')) {
                     responseHeaders.set('Content-Type', 'application/json');
                 }
