@@ -117,7 +117,7 @@ export const handleRequest = (
 
     const routeResponse: RouteResponse = {
         send: (data, options) => {
-            if (typeof data === 'object' && typeof data !== null) {
+            if (typeof data === 'object' && data !== null) {
                 if (!responseHeaders.has('Content-Type')) {
                     responseHeaders.set('Content-Type', 'application/json');
                 }

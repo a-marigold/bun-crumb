@@ -1,6 +1,6 @@
 {
     "name": "bun-crumb",
-    "version": "0.12.3",
+    "version": "0.12.4",
     "author": "marigold",
     "module": "dist/index.js",
     "license": "UNLICENSED",
@@ -36,8 +36,8 @@
     ],
     "private": false,
     "scripts": {
-        "lint": "bunx biome check",
-        "build": "bunx rollup -c",
+        "lint": "biome check",
+        "build": "rollup -c",
         "prepublishOnly": "bun run build",
         "pshPublic": "bun publish --access public"
     }

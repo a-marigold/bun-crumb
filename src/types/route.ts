@@ -71,7 +71,7 @@ export interface RouteResponse<
     T extends { body: unknown } = { body: unknown },
 > {
     /**
-     * Sets Response body to provided `data`.
+     * #### Sets Response body to provided `data`.
      * Automatically sets `Content-Type` to `application/json` if an object was provided and transforms `data` to JSON.
      *
      * ### **IMPORTANT NOTES**:
@@ -113,7 +113,7 @@ export interface RouteResponse<
     send: (data?: T['body'], options?: ResponseOptions) => void;
 
     /**
-     * Sets `Location` header to provided `url` and `response.status` to provided `status`
+     * #### Sets `Location` header to provided `url` and `response.status` to provided `status`
      *
      *
      *
@@ -139,14 +139,15 @@ export interface RouteResponse<
     ) => void;
 
     /**
-     * Sets the response header.
+     * #### Sets a response header.
      *
      *
      *
      *
-     * Overrides header if it already exists.
+     * - Overrides header if it already exists.
      *
-     * Case of `name` is not important. Names 'content-type', 'Content-Type', 'CoNteNt=TYPE' are the same.
+     *
+     * - Case of `name` is not important. Names 'content-type', 'Content-Type', 'CoNteNt=TYPE' are the same.
      *
      *
      * @param name header name
@@ -163,10 +164,19 @@ export interface RouteResponse<
     setHeader: (name: Header['name'], value: Header['value']) => void;
 
     /**
+     * #### Sets a cookie to response headers.
+     *
      *
      * @param options `Bun.Cookie` options parameter
      *
-     *
+     * @example
+     * ```typescript
+     * response.setCookie({ name: 'Crumb', value: 'Bun', secure: true })
+     * ```
+     * The same behaviour is
+     * ```typescript
+     * response.setHeader('Set-Cookie', 'Crumb=Bun; Secure; Path=/; SameSite=lax'); // `Path=/` and `SameSite=lax` are defaults
+     * ```
      *
      *
      */

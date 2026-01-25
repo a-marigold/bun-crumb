@@ -71,7 +71,7 @@ listen({ port: PORT }); // This should be after all `createRoute` calls.
     <summary>k6 script</summary>
 
 ```bash
-    sleep 1 | k6 run script.js
+sleep 1 | k6 run script.js
 ```
 
 ```javascript
@@ -161,10 +161,6 @@ fastify.listen({ port: PORT }, () => {
 
 <details>
     <summary>Bun Crumb server code</summary>
-
-```bash
-sleep 1 | k6 run script.js
-```
 
 ```typescript
 import { PORT } from './constants';
